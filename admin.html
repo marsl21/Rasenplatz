@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Rasenplätze FC Rheineck</title>
+  <style>
+    :root {
+      --fcr-blue: #0c3c88;
+      --fcr-blue-dark: #082c64;
+      --fcr-red: #d71920;
+      --fcr-red-dark: #b91218;
+      --bg: #eef3f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #d9e2ee;
+      --shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+      --radius: 20px;
+      --green: #1f9d55;
+      --orange: #d97706;
+      --red: #d62828;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(180deg, var(--fcr-blue) 0, var(--fcr-blue-dark) 180px, var(--bg) 180px);
+    }
+
+    .app {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 16px 14px 40px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--fcr-blue) 0%, var(--fcr-red) 100%);
+      color: white;
+      border-radius: 26px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-wrap {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .logo-wrap img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .logo-fallback {
+      display: none;
+      font-weight: bold;
+      font-size: 20px;
+      color: white;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+
+    .box {
+      background: white;
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .box h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      margin-bottom: 16px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .row {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+
+    .day {
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .fields {
+      display: grid;
+      gap: 10px;
+    }
+
+    select, textarea, input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 15px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: white;
+    }
+
+    textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--fcr-blue);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--fcr-blue-dark);
+    }
+
+    .btn-red {
+      background: var(--fcr-red);
+      color: white;
+    }
+
+    .btn-red:hover {
+      background: var(--fcr-red-dark);
+    }
+
+    .btn-light {
+      background: #edf2f7;
+      color: var(--text);
+    }
+
+    .preview {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 16px;
+      padding: 14px;
+      overflow: auto;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      min-height: 160px;
+    }
+
+    .status-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status-freigegeben { color: var(--green); font-weight: bold; }
+    .status-unsicher { color: var(--orange); font-weight: bold; }
+    .status-gesperrt { color: var(--red); font-weight: bold; }
+
+    @media (max-width: 560px) {
+      .header h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="header">
+      <div class="header-top">
+        <div class="logo-wrap">
+          <img
+            src="logo-fcr.png"
+            alt="FC Rheineck Logo"
+            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
+          />
+          <div class="logo-fallback">FCR</div>
+        </div>
+        <div>
+          <h1>Admin – Rasenplätze FC Rheineck</h1>
+          <p>Hier pflegst du die Woche und lädst danach die neue platz.csv herunter.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Wochendaten pflegen</h2>
+      <div class="hint">
+        Diese Seite speichert nicht direkt auf GitHub. Du klickst unten auf <strong>CSV herunterladen</strong> und lädst danach die Datei <strong>platz.csv</strong> in dein GitHub-Repository hoch.
+      </div>
+
+      <div id="rows" class="grid"></div>
+
+      <div class="actions">
+        <button class="btn-primary" id="fillDefault">Standard-Woche laden</button>
+        <button class="btn-light" id="previewBtn">CSV-Vorschau aktualisieren</button>
+        <button class="btn-red" id="downloadBtn">platz.csv herunterladen</button>
+      </div>
+
+      <div class="status-note">
+        Status-Farben: <span class="status-freigegeben">Freigegeben</span>,
+        <span class="status-unsicher">Unsicher</span>,
+        <span class="status-gesperrt">Gesperrt</span>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>CSV-Vorschau</h2>
+      <div class="preview" id="preview"></div>
+    </div>
+  </div>
+
+  <script>
+    const days = [
+      "Montag",
+      "Dienstag",
+      "Mittwoch",
+      "Donnerstag",
+      "Freitag",
+      "Samstag",
+      "Sonntag"
+    ];
+
+    const defaultData = [
+      { Tag: "Montag", Status: "Freigegeben", Informationen: "" },
+      { Tag: "Dienstag", Status: "Freigegeben", Informationen: "" },
+      { Tag: "Mittwoch", Status: "Unsicher", Informationen: "Vorort muss geprüft werden, ob Platz nicht zu nass ist - im Zweifelsfall ausweichen auf Kunstrasen" },
+      { Tag: "Donnerstag", Status: "Gesperrt", Informationen: "" },
+      { Tag: "Freitag", Status: "Gesperrt", Informationen: "" },
+      { Tag: "Samstag", Status: "Freigegeben", Informationen: "" },
+      { Tag: "Sonntag", Status: "Freigegeben", Informationen: "" }
+    ];
+
+    const rowsEl = document.getElementById("rows");
+    const previewEl = document.getElementById("preview");
+
+    function csvEscape(value) {
+      const str = String(value ?? "");
+      if (str.includes(";") || str.includes('"') || str.includes("\n")) {
+        return '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    }
+
+    function renderRows(data) {
+      rowsEl.innerHTML = data.map((item, index) => `
+        <div class="row">
+          <div class="day">${item.Tag}</div>
+          <div class="fields">
+            <select data-type="status" data-index="${index}">
+              <option value="Freigegeben" ${item.Status === "Freigegeben" ? "selected" : ""}>Freigegeben</option>
+              <option value="Unsicher" ${item.Status === "Unsicher" ? "selected" : ""}>Unsicher</option>
+              <option value="Gesperrt" ${item.Status === "Gesperrt" ? "selected" : ""}>Gesperrt</option>
+            </select>
+            <textarea data-type="info" data-index="${index}" placeholder="Optionale Informationen...">${item.Informationen || ""}</textarea>
+          </div>
+        </div>
+      `).join("");
+
+      rowsEl.querySelectorAll("select, textarea").forEach(el => {
+        el.addEventListener("input", updatePreview);
+      });
+    }
+
+    function getCurrentData() {
+      return days.map((day, index) => {
+        const status = rowsEl.querySelector(`select[data-index="${index}"]`).value;
+        const info = rowsEl.querySelector(`textarea[data-index="${index}"]`).value.trim();
+
+        return {
+          Tag: day,
+          Status: status,
+          Informationen: info
+        };
+      });
+    }
+
+    function generateCSV(data) {
+      const lines = [];
+      lines.push("Tag;Status;Informationen");
+
+      data.forEach(row => {
+        lines.push([
+          csvEscape(row.Tag),
+          csvEscape(row.Status),
+          csvEscape(row.Informationen)
+        ].join(";"));
+      });
+
+      return lines.join("\n");
+    }
+
+    function updatePreview() {
+      const csv = generateCSV(getCurrentData());
+      previewEl.textContent = csv;
+    }
+
+    function downloadCSV() {
+      const csv = generateCSV(getCurrentData());
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "platz.csv";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById("fillDefault").addEventListener("click", () => {
+      renderRows(defaultData);
+      updatePreview();
+    });
+
+    document.getElementById("previewBtn").addEventListener("click", updatePreview);
+    document.getElementById("downloadBtn").addEventListener("click", downloadCSV);
+
+    renderRows(defaultData);
+    updatePreview();
+  </script>
+</body>
+</html>
