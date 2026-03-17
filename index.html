@@ -123,27 +123,7 @@
       font-size: 13px;
     }
 
-    .alert-banner {
-      display: none;
-      margin-bottom: 14px;
-      background: linear-gradient(135deg, #fff0f0 0%, #ffe0e0 100%);
-      border: 2px solid #ef4444;
-      color: #991b1b;
-      border-radius: 18px;
-      padding: 14px 16px;
-      box-shadow: var(--shadow);
-    }
-
-    .alert-banner.show {
-      display: block;
-    }
-
-    .alert-title {
-      font-weight: bold;
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-
+   
     .loading,
     .error {
       background: white;
@@ -349,12 +329,7 @@
       </div>
     </div>
 
-    <div id="alertBanner" class="alert-banner">
-      <div class="alert-title">Achtung: Mindestens ein Platz ist gesperrt</div>
-      <div id="alertText">Bitte prüfe die Tagesübersicht unten.</div>
-    </div>
-
-    <div id="content" class="loading">Daten werden geladen...</div>
+        <div id="content" class="loading">Daten werden geladen...</div>
 
     <div class="footer-note">
       Stand gemass Datei <strong>platz.csv</strong>
@@ -519,13 +494,11 @@
     function render(data) {
       const content = document.getElementById("content");
       const byDay = {};
-      let blockedDays = [];
+    
 
       data.forEach(item => {
         byDay[item.Tag] = item;
-        if (normalizeStatus(item.Status) === "Gesperrt") {
-          blockedDays.push(item.Tag);
-        }
+       
       });
 
       const html = orderedDays.map(day => {
@@ -549,7 +522,7 @@
               </div>
             </div>
             <div class="right">
-              ${info ? `<button class="info-btn" data-day="${safeDay}" data-info="${escapeHtml(info)}">Info</button>` : ""}
+              ${info ? `<button class="info-btn" data-day="${encodeURIComponent(day)}" data-info="${encodeURIComponent(info)}">Info</button>` : ""}
             </div>
           </div>
         `;
@@ -559,20 +532,15 @@
       content.innerHTML = html;
 
       document.querySelectorAll(".info-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          openModal(btn.dataset.day, btn.dataset.info);
-        });
-      });
+  btn.addEventListener("click", () => {
+    openModal(
+      decodeURIComponent(btn.dataset.day),
+      decodeURIComponent(btn.dataset.info)
+    );
+  });
+});
 
-      const banner = document.getElementById("alertBanner");
-      const bannerText = document.getElementById("alertText");
-
-      if (blockedDays.length > 0) {
-        banner.classList.add("show");
-        bannerText.textContent = `Gesperrt an: ${blockedDays.join(", ")}`;
-      } else {
-        banner.classList.remove("show");
-      }
+     
     }
 
     async function loadData() {
